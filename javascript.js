@@ -104,8 +104,8 @@ const gameController = (function () {
     return { playTurn, restartGame, getCurrentPlayer };
 })();
 
-const displayGameBoard = (function () {    
-    function display(){
+const displayFunction = (function () {    
+    function displayGameBoard(){
         let currentBoard = gameboard.getBoard();
         let currentPlayer = gameController.getCurrentPlayer();
         for (let i=0; i<9; i=i+1){
@@ -115,13 +115,13 @@ const displayGameBoard = (function () {
         console.log(currentBoard);
     }
 
-    return { display }
+    return { displayGameBoard }
 })();
 
 document.querySelectorAll(".cell").forEach((cell, index) => {
     cell.addEventListener("click", function () {
       console.log("Zelle angeklickt:", index);
       gameController.playTurn(index);
-      displayGameBoard.display();
+      displayFunction.displayGameBoard();
     });
   });  
