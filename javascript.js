@@ -44,6 +44,9 @@ const gameController = (function () {
         } else {
             console.log("Invalid move, cell occupied!");
         }
+        if (checkWin()!== null){
+            displayFunction.display();
+        }
         console.log(checkWin());
     }
 
@@ -101,13 +104,12 @@ const gameController = (function () {
         return null;
     }
 
-    return { playTurn, restartGame, getCurrentPlayer };
+    return { playTurn, restartGame, getCurrentPlayer, checkWin };
 })();
 
 const displayFunction = (function () {    
     function displayGameBoard(){
         let currentBoard = gameboard.getBoard();
-        let currentPlayer = gameController.getCurrentPlayer();
         for (let i=0; i<9; i=i+1){
             const currentCell = document.getElementById(i);
             currentCell.innerHTML = `${currentBoard[i]}`;
@@ -115,7 +117,29 @@ const displayFunction = (function () {
         console.log(currentBoard);
     }
 
-    return { displayGameBoard }
+    function display(){
+        const winningPlayer = gameController.checkWin();
+        const modal = document.querySelector(".game-modal");
+
+        if (winningPlayer!== "Draw"){
+            modal.innerHTML = `<h1> Winner is ${winningPlayer}</h1><button class="boton-elegante">Restart</button>`;
+            document.querySelector(".boton-elegante").addEventListener("click", function (){
+                gameController.restartGame();
+                displayFunction.displayGameBoard();
+                document.querySelector(".game-modal").classList.remove("show");
+            });
+        }else{
+            modal.innerHTML = `<h1> ${winningPlayer}</h1><button class="boton-elegante">Restart</button>`;
+            document.querySelector(".boton-elegante").addEventListener("click", function (){
+                gameController.restartGame();
+                displayFunction.displayGameBoard();
+                document.querySelector(".game-modal").classList.remove("show");
+            });
+        }
+        modal.classList.add("show");
+    }
+
+    return { displayGameBoard, display }
 })();
 
 document.querySelectorAll(".cell").forEach((cell, index) => {
@@ -124,4 +148,4 @@ document.querySelectorAll(".cell").forEach((cell, index) => {
       gameController.playTurn(index);
       displayFunction.displayGameBoard();
     });
-  });  
+});
