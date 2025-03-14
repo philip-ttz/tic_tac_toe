@@ -1,8 +1,8 @@
 const gameboard = (function () {
-    let board = Array(9).fill(0);
+    let board = Array(9).fill("");
 
     function checkIfCellIsOccupied(cell) {
-        return board[cell] !== 0;
+        return board[cell] !== "";
     }
 
     function entryInGameboard(player, cell) {
@@ -14,7 +14,7 @@ const gameboard = (function () {
     }
 
     function resetBoard(){
-        board.fill(0);
+        board.fill("");
     }
 
     function getBoard(){
@@ -38,12 +38,13 @@ const gameController = (function () {
         let player = players[currentPlayerIndex];
         let currentBoard = gameboard.getBoard();
         
-        if (currentBoard[cell] === 0) {  // Directly check if the cell is empty
+        if (currentBoard[cell] === "") {  // Directly check if the cell is empty
             gameboard.entryInGameboard(player.marker, cell);
             currentPlayerIndex = 1 - currentPlayerIndex; // Switch player (0 ↔ 1)
         } else {
             console.log("Invalid move, cell occupied!");
         }
+        console.log(checkWin());
     }
 
     function restartGame() {
@@ -56,7 +57,7 @@ const gameController = (function () {
     }
 
     function isBoardFull() {
-        return !gameboard.getBoard().includes(0); // If no 0s left, board is full
+        return !gameboard.getBoard().includes(""); // If no 0s left, board is full
     }
 
     function checkWin(){
@@ -65,7 +66,7 @@ const gameController = (function () {
             return "Draw";
         }
         for (let i=0; i<9; i=i+3){
-            if (currentBoard[i] !== 0 && currentBoard[i]=== currentBoard[i+1] && currentBoard[i]=== currentBoard[i+2]){
+            if (currentBoard[i] !== "" && currentBoard[i]=== currentBoard[i+1] && currentBoard[i]=== currentBoard[i+2]){
                 for(let isWinningPlayer of players){
                     if ( isWinningPlayer.marker === currentBoard[i]){
                         return isWinningPlayer.playername;
@@ -74,7 +75,7 @@ const gameController = (function () {
             }
         }
         for (let i=0; i<3; i=i+1){
-            if (currentBoard[i] !== 0 && currentBoard[i]=== currentBoard[i+3] && currentBoard[i]=== currentBoard[i+6]){
+            if (currentBoard[i] !== "" && currentBoard[i]=== currentBoard[i+3] && currentBoard[i]=== currentBoard[i+6]){
                 for(let isWinningPlayer of players){
                     if ( isWinningPlayer.marker === currentBoard[i]){
                         return isWinningPlayer.playername;
@@ -82,14 +83,14 @@ const gameController = (function () {
                 }
             }
         }
-        if (currentBoard[0] !== 0 && currentBoard[0] === currentBoard[4] && currentBoard[4] === currentBoard[8]){
+        if (currentBoard[0] !== "" && currentBoard[0] === currentBoard[4] && currentBoard[4] === currentBoard[8]){
             for(let isWinningPlayer of players){
                 if ( isWinningPlayer.marker === currentBoard[0]){
                     return isWinningPlayer.playername;
                 }
             }
         }
-        if (currentBoard[2] !== 0 && currentBoard[2] === currentBoard[4] && currentBoard[4] === currentBoard[6]){
+        if (currentBoard[2] !== "" && currentBoard[2] === currentBoard[4] && currentBoard[4] === currentBoard[6]){
             for(let isWinningPlayer of players){
                 if ( isWinningPlayer.marker === currentBoard[2]){
                     return isWinningPlayer.playername;
@@ -100,5 +101,27 @@ const gameController = (function () {
         return null;
     }
 
-    return { playTurn, restartGame, getCurrentPlayer, checkWin };
+    return { playTurn, restartGame, getCurrentPlayer };
 })();
+
+const displayGameBoard = (function () {    
+    function display(){
+        let currentBoard = gameboard.getBoard();
+        let currentPlayer = gameController.getCurrentPlayer();
+        for (let i=0; i<9; i=i+1){
+            const currentCell = document.getElementById(i);
+            currentCell.innerHTML = `${currentBoard[i]}`;
+        }
+        console.log(currentBoard);
+    }
+
+    return { display }
+})();
+
+document.querySelectorAll(".cell").forEach((cell, index) => {
+    cell.addEventListener("click", function () {
+      console.log("Zelle angeklickt:", index);
+      gameController.playTurn(index);
+      displayGameBoard.display();
+    });
+  });  
